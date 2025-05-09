@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition between themes */
+  background-color: #FAF3E0; /* Warm Cream / Light Beige */
+  color: #1E1E1E; /* Almost black for strong readability */
+}
+
+.card {
+  background-color: #FFFFFF; /* Clean and soft card background */
+}
+
+.card-alt {
+  background-color: #F5F5F5; /* Alternative card background */
+}
+
+.accent-blue {
+  color: #1E3A8A; /* Accent Blue */
+}
+
+.accent-gold {
+  color: #FFD700; /* Accent Gold */
+}
+
+.accent-green {
+  color: #93C572;
+}
+
+/* Dark Mode Styles (with Tailwind's .dark class) */
+body.dark {
+  background-color: #121212; /* Modern dark grey */
+  color: #F0F0F0; /* Off-white for text */
+}
+
+body.dark .card {
+  background-color: #2A2A2A; /* Dark card background */
+}
+
+body.dark .card-alt {
+  background-color: #2C2C2E; /* Slightly lighter dark card background */
+}
+
+body.dark .accent-blue {
+  color: #1E3A8A; /* Accent Blue */
+}
+
+body.dark .accent-gold {
+  color: #FFD700; /* Accent Gold */
+}
+body.dark .accent-green {
+  color: #93C572;
+}
+
+/* Button and input states */
+button, .input {
+  transition: all 0.3s ease;
+}
+
+.card, .card-alt, .accent-blue, .accent-gold, .accent-green {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.8);
+}
+
+
+
