@@ -42,9 +42,4 @@ export const navlinks = [
     link: '/',
     disabled: true,
   },*/
-  /*
-  {name: 'search',
-    imgUrl: search,
-    link: '/search-campaign',
-  }*/
 ];

@@ -3,22 +3,17 @@ import { Sun, Moon } from "lucide-react";
 
 const ThemeToggle = ({ isExpanded = false }) => {
   const [theme, setTheme] = useState(() => {
-    // Load theme from localStorage or default based on system preference
     return localStorage.getItem("theme") ||
       (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   });
 
   useEffect(() => {
     const root = window.document.documentElement;
-
-    // Apply the theme to the root element
     if (theme === "dark") {
         root.classList.add("dark");
     } else {
         root.classList.remove("dark");
     }
-
-    // Save the theme preference to localStorage
     localStorage.setItem("theme", theme);
   }, [theme]);
 

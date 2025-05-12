@@ -1,20 +1,18 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useAddress, useContract, useContractWrite, useConnect, useDisconnect, useConnectionStatus, metamaskWallet } from '@thirdweb-dev/react';
 import { ethers } from 'ethers';
-//import { useActiveWallet, useDisconnect, useWalletAddress } from '@thirdweb-dev/react';
-//import { useContract, useContractWrite } from 'thirdweb';
 
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  const { contract } = useContract('0x487Be678dd11a315e18Af16D08f95C939B694D19');
+  const { contract } = useContract('0x4070DAA4d15A2936FF84F8d5B5D5Fb05E200b93C');
   //const [isLoading, setIsLoading] = useState(false);
 
   const address = useAddress();
-  const connect = useConnect();
-  const disconnect = useDisconnect();
-  const isConnected = useConnectionStatus() === "connected";
-  const connectWithMetamask = () => connect(metamaskWallet());
+  //const connect = useConnect();
+  //const disconnect = useDisconnect();
+  //const isConnected = useConnectionStatus() === "connected";
+  //const connectWithMetamask = () => connect(metamaskWallet());
 
   // Create campaign
   const { mutateAsync: createCampaign } = useContractWrite(contract, 'createCampaign');
@@ -24,9 +22,10 @@ export const StateContextProvider = ({ children }) => {
         args: [
           form.title,
           form.description,
-          form.target,
+          form.goal,
           Math.floor(new Date(form.deadline).getTime() / 1000),
-          form.image,
+          form.img,
+          form.video,
         ]
       });
       console.log("Campaign published", data);
@@ -47,9 +46,9 @@ export const StateContextProvider = ({ children }) => {
         raised: ethers.utils.formatEther(c.raised.toString()),
         deadline: c.deadline.toNumber(),
         status: c.status,
-        goalReached: c.goalReached,
         extended: c.extended,
         img: c.img,
+        video: c.video,
         pId: i + 1
       }));
     } catch (error) {
@@ -60,7 +59,7 @@ export const StateContextProvider = ({ children }) => {
   // Get user-created campaigns
   const getUserCampaigns = async () => {
     const all = await getAllCampaigns();
-    return all.filter((c) => c.creator.toLowerCase() === address.toLowerCase());
+    return all.filter((c) => c.creator === address);
   };
 
   // Donate
@@ -69,12 +68,15 @@ export const StateContextProvider = ({ children }) => {
       const data = await contract.call('donate', [pId], {
         value: ethers.utils.parseEther(amount)
       });
-      return data;
+      console.log('Donation successful', data);
+      return { success: true, message: 'Donation successful!' };
     } catch (error) {
-      console.error("Donation failed", error);
+      console.error('Donation failed', error);
+      return { success: false, message: 'Donation failed. Please try again.' };
     }
   };
 
+  {/*
   // Check campaign goal status after deadline
   const checkCampaignGoal = async (pId) => {
     try {
@@ -84,6 +86,16 @@ export const StateContextProvider = ({ children }) => {
       console.error("Goal check failed", error);
     }
   };
+  */}
+
+  const closeCampaign = async (pId) => {
+    try {
+      const close = await contract.call('closeCampaign', [pId]);
+      return close;
+    } catch (error) {
+      console.error("Closing campaign failed", error);
+    }
+  }
 
   // Extend deadline
   const extendCampaignDeadline = async (pId, newDeadlineTimestamp) => {
@@ -115,12 +127,38 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
+  const getDonorDetails = async (pId) => {
+    try {
+      const donorAddress = await contract.call("getCampaignDonors", [pId]);
+      const donorDetails = await Promise.all(donorAddress.map(async (addr) => {
+        const amount = await contract.call("getDonatedAmount", [pId, addr]);
+        return {
+          donor: addr,
+          amount: ethers.utils.formatEther(amount),
+        };
+      }));
+      return donorDetails;
+    } catch (error) {
+      console.error("Failed to fetch donor list with amounts:", error);
+      return [];
+    }
+  }
+
   const getCampaign = async (pId) => {
     try {
       const campaign = await contract.call('getCampaign', [pId]);
       return campaign;
     } catch (error) {
       console.error("Fetching campaign failed",error);
+    }
+  }
+
+  const getCampaignStatus = async(pId) => {
+    try {
+      const status = await contract.call('getCampaignStatus', [pId]);
+      return status;
+    } catch (error) {
+      console.error("Fetching status of the campaign failed", error);
     }
   }
 
@@ -149,17 +187,20 @@ export const StateContextProvider = ({ children }) => {
       value={{
         address,
         contract,
-        connect: connectWithMetamask,
-        disconnect,
-        isConnected,
+        //connect: connectWithMetamask,
+        //disconnect,
+        //isConnected,
         createCampaign: publishCampaign,
         getAllCampaigns,
         getUserCampaigns,
+        closeCampaign,
+        getCampaignStatus,
         donate,
-        checkCampaignGoal,
+        //checkCampaignGoal,
         extendCampaignDeadline,
         releaseCampaignFunds,
         getCampaignDonors,
+        getDonorDetails,
         getDonatedAmount,
         getCampaign,
         getMyDonatedCampaigns,

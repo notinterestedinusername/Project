@@ -7,3 +7,4 @@ export { default as ThemeToggle } from './ThemeToggle';
 export { default as Layout } from './Layout';
 export { default as DisplayCampaigns } from './DisplayCampaigns';
 export { default as FundCard } from './FundCard';
+export { default as CountBox } from './CountBox';

@@ -8,7 +8,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
   const navigate = useNavigate();
 
   const handleNavigate = (campaign) => {
-    navigate(`/campaign/${campaign.title}`, { state: campaign });
+    navigate(`/campaign/${campaign.pId}`, { state: campaign });
   };
 
   return (
@@ -28,15 +28,15 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
           </p>
         )}
 
-        {!isLoading &&
-          campaigns.length > 0 &&
-          campaigns.map((campaign) => (
+        {!isLoading && campaigns.length > 0 && campaigns.map((campaign) => {
+            console.log(campaign);
+            return (
             <FundCard
-              key={`${campaign.owner}-${campaign.title}`}
+              key={campaign.pId}
               {...campaign}
               handleClick={() => handleNavigate(campaign)}
             />
-          ))}
+          )})}
       </div>
     </div>
   );

@@ -69,5 +69,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.8);
 }
 
+.notification {
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.notification.success {
+  background-color: #28a745;
+  color: white;
+}
+
+.notification.error {
+  background-color: #dc3545;
+  color: white;
+}
+
 
 

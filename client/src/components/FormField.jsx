@@ -7,11 +7,13 @@ const FormField = ({
   isTextArea,
   value,
   handleChange,
-  error
+  //isRequired = true,
+  error,
+  accept,
 }) => {
-    const baseClasses =
+  const baseClasses =
     'py-[16px] sm:px-[25px] px-[15px] outline-none border-[1px] rounded-[10px] font-epilogue text-[16px] sm:min-w-[300px] bg-transparent transition-all caret-accentBlue focus:ring-2 focus:ring-accentBlue';
-  
+
   const borderColor = error ? 'border-red-500' : 'border-[#3a3a43]';
   const textColor = 'text-light-text';
   const placeholderColor = error ? 'placeholder-red-500' : 'placeholder:text-[#4b5264]';
@@ -26,7 +28,7 @@ const FormField = ({
 
       {isTextArea ? (
         <textarea
-          required
+          //required={isRequired}
           rows={10}
           value={value}
           onChange={handleChange}
@@ -35,12 +37,12 @@ const FormField = ({
         />
       ) : (
         <input
-          required
+          //required={isRequired}
           type={inputType}
-          value={value}
+          accept={accept}
           onChange={handleChange}
           placeholder={placeholder}
-          step={inputType === 'number' ? '0.1' : undefined}
+          step="any"
           className={`${baseClasses} ${borderColor} ${textColor} ${placeholderColor}`}
         />
       )}

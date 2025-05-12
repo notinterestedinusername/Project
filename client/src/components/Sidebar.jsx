@@ -32,18 +32,22 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState('');
 
-  // Sidebar width based on expansion state
   const sidebarWidth = isExpanded ? 'w-56' : 'w-14';
 
   useEffect(() => {
     const currentPath = location.pathname.split('/')[1] || 'home';
-    setIsActive(currentPath); // dynamically set the active item
-    console.log('Current active path:', currentPath);
+    const matched = navlinks.find(link => link.link.replace('/', '') === currentPath);
 
+    if (matched) {
+      setIsActive(matched.name);
+    } else {
+      setIsActive('');
+    }
   }, [location]);
 
+
   return (
-    <div className={`fixed top-20 left-0 bottom-0 w-auto z-40 flex flex-col justify-between py-6 px-2 
+    <div className={`fixed top-24 left-0 bottom-0 w-auto z-40 flex flex-col justify-between py-6 px-2 
       overflow-y-auto bg-light-background dark:bg-dark-background border-r dark:border-gray-700 border-gray-300 
       transition-all duration-500 ease-in-out ${sidebarWidth}`}
     >
@@ -67,7 +71,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
       </div>
 
       <div className="flex flex-col gap-4 mt-auto">
-        {/* Divider: Just above the toggle button */}
+        {/* Divider:above the toggle button */}
         <div className="my-3 flex justify-center">
           <div
             className={`transition-all duration-300 bg-gray-300 dark:bg-gray-700 rounded 

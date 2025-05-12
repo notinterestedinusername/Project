@@ -2,90 +2,109 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 
-import { useStateContext } from '../context'; 
+import { useStateContext } from '../context';
 import { CustomButton, FormField, Loader } from '../components';
-import { checkIfImage } from '../utils';
+import { uploadFileToPinata } from '../utils';
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
+  const { createCampaign, address } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
-  const { createCampaign, isConnected } = useStateContext();
+
   const [form, setForm] = useState({
     title: '',
     description: '',
-    target: '',
+    goal: '',
     deadline: '',
-    image: ''
+    img: null,
+    video: null,
   });
 
-  useEffect(() => {
-    if (!isConnected) {
-      navigate('/');  // Redirect to homepage if wallet is disconnected
-    }
-  }, [isConnected, navigate]);
-
   const [errors, setErrors] = useState({});
-  //const [globalError, setGlobalError] = useState('');
   const [imagePreview, setImagePreview] = useState('');
+  const [videoPreview, setVideoPreview] = useState('');
+
+  useEffect(() => {
+    if (!address) navigate('/');
+  }, [address, navigate]);
 
   const handleFormFieldChange = (fieldName, e) => {
-    setForm({ ...form, [fieldName]: e.target.value });
-    setErrors({ ...errors, [fieldName]: '' });
-    //setGlobalError('');
+    const file = e.target.files?.[0];
+    if(fieldName === 'video' && file) {
+      if (!file.type.startsWith('video/')) {
+        setErrors(prev => ({ ...prev, video: 'Only video files are allowed.' }));
+        setForm(prev => ({ ...prev, video: null }));
+        setVideoPreview('');
+        return;
+      }
+      setErrors(prev => ({ ...prev, video: '' }));
+      setForm(prev => ({ ...prev, video: file }));
+      setVideoPreview(URL.createObjectURL(file));
+    }
 
-    if (fieldName === 'image') {
-      checkIfImage(e.target.value, (exists) => {
-        setImagePreview(exists ? e.target.value : '');
-      });
+    if (fieldName === 'img' && file) {
+      if(!file.type.startsWith('image/')) {
+        setErrors(prev => ({ ...prev, img: 'Only image files are allowed.' }));
+        setForm(prev => ({ ...prev, img: null }));
+        setImagePreview('');
+        return;
+      }
+      setErrors(prev => ({ ...prev, img: '' }));
+      setForm(prev => ({ ...prev, img: file }));
+      setImagePreview(URL.createObjectURL(file));
+
+    }
+
+    if(!file) {
+      const value = e.target.value;
+      setForm(prev => ({ ...prev, [fieldName]: value}));
+      setErrors(prev => ({ ...prev, [fieldName]: ''}));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    //if (!form.title) newErrors.title = 'Title is required';
-    //if (!form.description) newErrors.description = 'Description is required';
-    if (!form.target || isNaN(form.target)) {
-      newErrors.target = 'Valid ETH target is required';
-    } else if ((form.target) <= 0) {
-      newErrors.target = 'Must be greater than 0';
-    }
-    if (!form.deadline) {
-      newErrors.deadline = 'Deadline is required';
-    } else if (new Date(form.deadline) < new Date()) {
-      newErrors.deadline = 'Deadline must be in the future';
-    }
-    if (!form.image) newErrors.image = 'Image URL is required';
-
+    if (!form.title.trim()) newErrors.title = 'Title is required';
+    if (!form.description.trim()) newErrors.description = 'Description is required';
+    if (!form.goal || isNaN(form.goal) || parseFloat(form.goal) <= 0) newErrors.goal = 'Valid ETH target is required';
+    if (!form.deadline || new Date(form.deadline) < new Date()) newErrors.deadline = 'Future deadline required';
+    if (!form.img) newErrors.img = 'Image file is required in .jpg /.jpeg /.png';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
-    //setGlobalError('');
     if (!validateForm()) return;
+    
+    setIsLoading(true);
+      try {
+        let imageUrl = '';
+        let videoUrl = '';
 
-    checkIfImage(form.image, async (exists) => {
-      if (exists) {
-        setIsLoading(true);
-        try {
-          await createCampaign({ ...form, target: ethers.utils.parseUnits(form.target, 18) });
-          setIsLoading(false);
-          navigate('/my-campaigns');
-        } catch (error) {
-          setIsLoading(false);
-          console.error("Error creating campaign:", error);
-          //setGlobalError(error.reason || error.message || 'Something went wrong');
-          //alert(error.reason || "Something went wrong. Please try again."); // Show as alert
+        if (form.img) {
+          imageUrl = await uploadFileToPinata(form.img);
         }
-      } else {
-        setErrors({ ...errors, image: 'Provide a valid image URL' });
-        setForm({ ...form, image: '' });
-        setImagePreview('');
+        if (form.video) {
+          videoUrl = await uploadFileToPinata(form.video);
+        }
+
+        const data = {
+          ...form,
+          goal: ethers.utils.parseUnits(form.goal, 18),
+          img: imageUrl,
+          video: videoUrl
+        };
+
+        await createCampaign(data);
+        navigate('/my-campaigns');
+      } catch (err) {
+        console.error("Campaign creation failed:", err);
+        alert(`Campaign creation failed: ${err.message}`);
+      } finally {
+        setIsLoading(false);
       }
-    });
-  };
+    };
 
   return (
     <div className="bg-light-background dark:bg-dark-background min-h-screen pt-20 px-4 sm:px-10 pb-10">
@@ -95,24 +114,16 @@ const CreateCampaign = () => {
           Start a Campaign
         </div>
 
-        {/*
-        {globalError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-center">
-            {globalError}
-          </div>
-        )}
-        */}
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col md:flex-row gap-6">
-            <FormField
-              LabelName="Campaign Title *"
-              placeholder="Write a title"
-              inputType="text"
-              value={form.title}
-              handleChange={(e) => handleFormFieldChange('title', e)}
-              error={errors.title}
-            />
+          <FormField
+            LabelName="Campaign Title *"
+            placeholder="Write a title"
+            inputType="text"
+            value={form.title}
+            handleChange={(e) => handleFormFieldChange('title', e)}
+            error={errors.title}
+          />
           </div>
 
           <FormField
@@ -127,11 +138,11 @@ const CreateCampaign = () => {
           <div className="flex flex-col md:flex-row gap-6">
             <FormField
               LabelName="Goal (in ETH) *"
-              placeholder="0.5"
+              placeholder="eg: 0.5"
               inputType="number"
-              value={form.target}
-              handleChange={(e) => handleFormFieldChange('target', e)}
-              error={errors.target}
+              value={form.goal}
+              handleChange={(e) => handleFormFieldChange('goal', e)}
+              error={errors.goal}
             />
             <FormField
               LabelName="End Date *"
@@ -143,33 +154,41 @@ const CreateCampaign = () => {
           </div>
 
           <FormField
-            LabelName="Campaign Image URL *"
-            placeholder="https://..."
-            inputType="url"
-            value={form.image}
-            handleChange={(e) => handleFormFieldChange('image', e)}
-            error={errors.image}
+            LabelName="Upload Campaign Image *"
+            inputType="file"
+            handleChange={(e) => handleFormFieldChange('img', e)}
+            error={errors.img}
+            accept="image/*"
+            isRequired={true}
           />
-
           {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="w-full max-w-xs h-auto mx-auto rounded-md mt-2 shadow"
-            />
+            <img src={imagePreview} alt="Preview" className="w-full max-w-xs h-auto mx-auto rounded-md mt-2 shadow" />
           )}
 
-          <div className="flex justify-center">
-            <CustomButton
-              btnType="submit"
-              title="Submit new Campaign"
-              styles="bg-light-accentGold dark:bg-light-accentBlue hover:bg-yellow-600 dark:hover:bg-blue-500 px-6 py-2 rounded-[10px] border border-gray-500 shadow"
-            />
-          </div>
+          <FormField
+            LabelName="Upload a Video (optional)"
+            inputType="file"
+            handleChange={(e) => handleFormFieldChange('video', e)}
+            error={errors.video}
+            accept="video/mp4,video/webm"
+            isRequired={false}
+          />
+          {videoPreview && (
+            <video src={videoPreview} controls className="w-full max-w-md mx-auto rounded-md" />
+          )}
+
+        <div className="flex justify-center">
+          <CustomButton
+            btnType="submit"
+            title="Submit Campaign"
+            styles="bg-light-accentGold text-light-text hover:bg-yellow-600 px-6 py-2 rounded-[10px] border border-gray-500 shadow"
+            isDisabled={isLoading}
+          />
+        </div>
         </form>
       </div>
     </div>
-    )
+  );
 };
 
 export default CreateCampaign;
