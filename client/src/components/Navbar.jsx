@@ -18,7 +18,7 @@ const Navbar = () => {
         <span className="text-[30px] font-bold text-light-text dark:text-dark-text">crypDan</span>
       </div>
 
-      {/* Center: Search bar 
+      {/* Center: Search bar*/} 
       <div className="flex-1 mx-6 max-w-[300px] hidden md:flex">
         <div className="flex items-center justify-between w-full bg-light-card dark:bg-dark-cardAlt rounded-full h-[42px] shadow-sm pl-4 pr-1">
           <input
@@ -31,7 +31,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      */}
+      
 
       {/* Right Section: Buttons */}
       <div className="flex items-center gap-5">

@@ -21,6 +21,15 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
+      {/* Footer */}
+      <footer className="w-full bg-black text-white py-6 px-4 text-center">
+        <p className="text-sm">&copy; {new Date().getFullYear()} CrypDan. All rights reserved.</p>
+        <div className="mt-2 flex justify-center gap-4">
+          <a href="/about" className="hover:underline">About Us</a>
+          <a href="/contact" className="hover:underline">Contact</a>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
+        </div>
+      </footer>
     </div>
   );
 };

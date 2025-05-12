@@ -12,6 +12,7 @@ const FundCard = ({
   raised,
   img,
   handleClick,
+  backers = 0, // default if not passed
 }) => {
   const remainingDays = daysLeft(deadline);
   const progress = calculateBarPercentage(goal, raised);

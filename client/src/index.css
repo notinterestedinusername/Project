@@ -87,5 +87,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: white;
 }
 
+@keyframes backgroundAnimation {
+  0% {
+    background-color: #ff7e5f; /* Start color */
+  }
+  50% {
+    background-color: #feb47b; /* Middle color */
+  }
+  100% {
+    background-color: #ff7e5f; /* End color (back to start) */
+  }
+}
+
+.bg-animated {
+  animation: backgroundAnimation 10s infinite ease-in-out;
+}
+
 
 
