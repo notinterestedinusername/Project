@@ -14,7 +14,7 @@ const App = () => {
   const marginLeft = isExpanded ? 'ml-56' : 'ml-14';
 
   return (
-    <div className="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text min-h-screen flex flex-col">
+    <div className="bg-light-background text-light-text dark:bg-dark-background dark:text-dark-text font-epilogue min-h-screen flex flex-col">
       {/* Navbar */}
       <Toaster position="top-center" reverseOrder={false} />
       <Navbar />
@@ -43,7 +43,7 @@ const App = () => {
       </div>
 
       {/* Footer */}
-      <Footer />
+      
     </div>
   );
 };

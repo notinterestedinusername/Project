@@ -11,7 +11,7 @@ const Navbar = () => {
   //console.log(address);
 
   return (
-    <nav className="fixed top-0 h-24 left-0 w-full flex items-center justify-between px-7 py-3 bg-light-background dark:bg-dark-background border-b border-gray-300 dark:border-gray-700 z-50 transition-all">
+    <nav className="fixed top-0 h-24 left-0 w-full flex items-center font-epilogue justify-between px-7 py-3 bg-light-background dark:bg-dark-background border-b border-gray-300 dark:border-gray-700 z-50 transition-all">
       {/* Left Section: Logo + Name */}
       <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
         <img src={mainlogo} alt="logo" className="w-14 h-14 object-contain" />
@@ -49,7 +49,7 @@ const Navbar = () => {
             onClick={() => navigate('/create-campaign')}
             className="font-semibold bg-light-accentBlue dark:bg-light-accentGold text-dark-text dark:text-light-text border border-gray-300 dark:border-gray-600 text-sm px-4 py-4 rounded-lg transition"
           >
-            Create a Campaign
+            Start Your Campaign
           </button>
         )}
         

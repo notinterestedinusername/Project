@@ -11,11 +11,13 @@ const FundCard = ({
   deadline,
   raised,
   img,
+  status,
   handleClick,
   backers = 0, // default if not passed
 }) => {
   const remainingDays = daysLeft(deadline);
   const progress = calculateBarPercentage(goal, raised);
+  const isClosed = status === 2;
 
   return (
     <div
@@ -37,7 +39,11 @@ const FundCard = ({
         <p className="mt-1 text-sm text-[#808191] line-clamp-2">
           {description}
         </p>
-
+        {isClosed ? (
+          <div className="mt-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-center rounded-lg font-medium text-sm">
+            Campaign is closed
+          </div>
+        ) : (
         <div className="space-y-2 mt-4">
           <div className="flex justify-between text-sm">
             <span className="font-medium text-[#b2b3bd]">{raised} ETH raised</span>
@@ -54,28 +60,15 @@ const FundCard = ({
           <div className="flex justify-between text-xs text-[#808191]">
             <div className="flex items-center gap-1">
               <Users className="h-4 w-4" />
-              <span>{backers} backers</span>
+              <span>{backers} {backers === 1 ? 'donor' : 'donors'}</span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              <span>{remainingDays} days left</span>
+              <span>{remainingDays} {remainingDays === 1 ? 'day' : 'days'} left</span>
             </div>
           </div>
         </div>
-      {/*
-        <div className="flex items-center mt-4 gap-3">
-          <div className="w-[30px] h-[30px] rounded-full bg-[#13131a] flex items-center justify-center">
-            <img
-              src={mainlogo}
-              alt="user"
-              className="w-1/2 h-1/2 object-contain"
-            />
-          </div>
-          <p className="text-xs text-[#808191] truncate font-epilogue">
-            by <span className="text-[#b2b3bd]">{creator}</span>
-          </p>
-        </div>
-        */}
+        )}
       </div>
     </div>
   );

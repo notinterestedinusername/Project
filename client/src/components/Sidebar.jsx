@@ -48,7 +48,7 @@ const Sidebar = ({ isExpanded, setIsExpanded }) => {
 
   return (
     <div className={`fixed top-24 left-0 bottom-0 w-auto z-40 flex flex-col justify-between py-6 px-2 
-      overflow-y-auto bg-light-background dark:bg-dark-background border-r dark:border-gray-700 border-gray-300 
+      overflow-y-auto bg-light-background dark:bg-dark-background font-epilogue border-r dark:border-gray-700 border-gray-300 
       transition-all duration-500 ease-in-out ${sidebarWidth}`}
     >
       {/* Icons */}

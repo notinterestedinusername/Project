@@ -107,10 +107,10 @@ const CreateCampaign = () => {
     };
 
   return (
-    <div className="bg-light-background dark:bg-dark-background min-h-screen pt-20 px-4 sm:px-10 pb-10">
+    <div className="bg-light-background dark:bg-dark-background font-epilogue min-h-screen pt-20 px-4 sm:px-10 pb-10">
       {isLoading && <Loader />}
-      <div className="bg-[#f2c6b4] p-6 rounded-lg shadow-md dark:shadow-dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] max-w-4xl mx-auto transition-shadow duration-300">
-        <div className="bg-[#33691e] text-light-background px-6 py-3 rounded-lg text-center font-bold text-2xl sm:text-3xl mb-8 shadow w-fit mx-auto">
+      <div className="bg-blue-200 dark:bg-white p-6 rounded-lg shadow-md dark:shadow-dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] max-w-4xl mx-auto transition-shadow duration-300">
+        <div className="bg-[#93C572] text-light-text px-6 py-3 rounded-lg text-center font-bold text-2xl sm:text-3xl mb-8 shadow w-fit mx-auto">
           Start a Campaign
         </div>
 
@@ -181,7 +181,7 @@ const CreateCampaign = () => {
           <CustomButton
             btnType="submit"
             title="Submit Campaign"
-            styles="bg-light-accentGold text-light-text hover:bg-yellow-600 px-6 py-2 rounded-[10px] border border-gray-500 shadow"
+            styles="bg-light-accentGold text-light-text dark:text-light-text hover:bg-yellow-600 px-6 py-2 rounded-[10px] border border-gray-500 shadow"
             isDisabled={isLoading}
           />
         </div>

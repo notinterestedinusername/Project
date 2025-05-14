@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { useStateContext } from '../context';
 import FundCard from './FundCard';
 import { loader } from '../icons';
 
 const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
   const navigate = useNavigate();
+  const { getCampaignDonors } = useStateContext();
+  const [donorCounts, setDonorCounts] = useState();
 
   const handleNavigate = (campaign) => {
     navigate(`/campaign/${campaign.pId}`, { state: campaign });
   };
+
+useEffect(() => {
+  const fetchDonorsForAll = async () => {
+    const counts = {};
+    for (const campaign of campaigns) {
+      const donors = await getCampaignDonors(campaign.pId);
+      counts[campaign.pId] = donors || [];
+    }
+    setDonorCounts(counts);
+  };
+
+  if (campaigns.length > 0) fetchDonorsForAll();
+}, [campaigns]);
+
+
 
   return (
     <div>
@@ -34,6 +51,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
             <FundCard
               key={campaign.pId}
               {...campaign}
+              backers={(donorCounts?.[campaign.pId]?.length || 0)}
               handleClick={() => handleNavigate(campaign)}
             />
           )})}
